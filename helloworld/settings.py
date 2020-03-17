@@ -25,12 +25,15 @@ SECRET_KEY = '+d$7lf&40==0=xj*g+s5&*c%z9u$*qp9gxr2jt+))ha-9vh!@4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.33.109.94']
-
+#ALLOWED_HOSTS = ['10.33.109.94']
+ALLOWED_HOSTS = ['192.168.100.145']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'Automation.apps.AutomationConfig',
+    'users.apps.UsersConfig',
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -118,3 +121,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'Automation/static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = 'Ansible-home'
+LOGIN_URL = 'login'
