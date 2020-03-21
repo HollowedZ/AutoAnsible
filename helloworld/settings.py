@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'Automation.apps.AutomationConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
+    'djansible.apps.DjansibleConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
