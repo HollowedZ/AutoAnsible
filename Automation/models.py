@@ -28,3 +28,4 @@ class PostInventoryHost(ModelForm):
             'ansible_ssh_pass': forms.Textarea(attrs={'cols':100, 'rows':1}),
             'ansible_become_pass': forms.Textarea(attrs={'cols':100, 'rows':1})
         }
+

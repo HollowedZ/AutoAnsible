@@ -13,25 +13,17 @@
               </div>
           <div class="row d-flex align-items-md-stretch">
            <div class="card">
-             <ul class="nav nav-tabs">
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'group-create' %}">Group</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link active" href="{% url 'host-create' %}">Host</a>
-                </li>
-              </ul>
           <form method="POST" class="text-left">
                {% csrf_token %}
                <div class="card-body">
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Host</label>
+                        <label>Name Playbook</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{form.host}}
+                            {{p_form.name}}
                         </div>
                     </div>
                 </div>
@@ -40,11 +32,11 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>IP Address Host</label>
+                        <label>Nama Group</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{form.ansible_ssh_host}}
+                            {{p_form.hosts}}
                         </div>
                     </div>
                 </div>
@@ -53,11 +45,11 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Username SSH</label>
+                        <label>Become</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{form.ansible_user}}
+                            {{p_form.become}}
                         </div>
                     </div>
                 </div>
@@ -66,11 +58,11 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Password SSH</label>
+                        <label>Become Method</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{form.ansible_ssh_pass}}
+                            {{p_form.become_method}}
                         </div>
                     </div>
                 </div>
@@ -79,30 +71,39 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Enable Password</label>
+                        <label>Gather Facts</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{form.ansible_become_pass}}
+                            {{p_form.gather_facts}}
                         </div>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row spacer">
-
                     <div class="col-2">
-                        <label>Group</label>
+                        <label>Ansible Module</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{form.group}}
+                            {{t_form.module}}
                         </div>
                     </div>
                 </div>
             </div>
-            
-
+            <div class="card-body">
+                <div class="row spacer">
+                    <div class="col-2">
+                        <label>Commands</label>
+                    </div>
+                    <div class="col-4">
+                        <div class="input-group">
+                            {{t_form.commands}}
+                        </div>
+                    </div>
+                </div>
+            </div>
              <div class="form-group text-center">
              <button class="btn btn-outline-info" type="submit">Create</button>
             </div>

@@ -60,3 +60,6 @@ def addhost(request):
         adddhost = PostInventoryHost()
         return render(request, 'ansibleweb/post_host.html', {'form':adddhost})
 
+
+
+

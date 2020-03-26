@@ -28,6 +28,9 @@ class AnsibleNetworkGroup(BaseAnsibleDeviceGroup):
     ansible_network_os = models.CharField(choices=const.ANSIBLE_NETWORK_OS_CHOICES, max_length=100)
     parent_group = models.ForeignKey('self', on_delete=models.DO_NOTHING, related_name='child_group', null=True, blank=True)
 
+    def __str__(self):
+        return "{}".format(self.name)
+
     class Meta:
         db_table = 'ansible_network_groups'
 
@@ -60,3 +63,8 @@ class AnsibleServerHost(BaseAnsibleHost):
 
     class Meta:
         db_table = 'ansible_server_hosts'
+
+    
+
+        
+
