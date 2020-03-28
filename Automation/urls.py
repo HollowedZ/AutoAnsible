@@ -14,6 +14,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('group/', views.addgroup, name='group-create'),
     path('host/', views.addhost, name='host-create'),
+    path('playbook/', views.addPlaybook, name='playbook-create'),
     path('about/', views.about, name='Ansible-about'),
 ]
 

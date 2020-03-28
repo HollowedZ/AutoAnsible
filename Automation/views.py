@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
-from .models import PostInventoryGroup, PostInventoryHost
+from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm
 from django.contrib import messages
 
 
@@ -60,6 +60,42 @@ def addhost(request):
         adddhost = PostInventoryHost()
         return render(request, 'ansibleweb/post_host.html', {'form':adddhost})
 
+def addPlaybook(request):
+    if request.method == 'POST':
+        p_form = PostPlayBookForm(request.POST)
+        t_form = TaskForm(request.POST)
+        if p_form.is_valid() and t_form.is_valid():
+            t_form.__dict__
+            tasks = t_form.save()
+            playbook = p_form.save(commit=False)
+            playbook.task = tasks
+            playbook.__dict__
+            playbook.save()
+            messages.success(request, f'Your playbook has been created!')
+            return redirect('Ansible-home')
+    else:
+        p_form = PostPlayBookForm()
+        t_form = TaskForm()
+    
+    context = {
+        'p_form': p_form,
+        't_form': t_form
+    }
+    
+    return render(request, 'ansibleweb/post_playbook.html', context)
 
+def addTask(request):
+    if request.method == 'POST':
+        p_form = PostPlayBookForm(request.POST)
+        if p_form.is_valid():
+            p_form.save()
+            messages.success(request, f'Task hasbeen created!')
+            return redirect('Ansible-home')
+    else:
+        p_form = PostPlayBookForm()
 
+    context = {
+        'p_form': p_form
+    }
 
+    return render(request, 'ansibleweb/post_playbook.html',context)

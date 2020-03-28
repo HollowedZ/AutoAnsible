@@ -1,5 +1,5 @@
 from django.db import models
-from djansible.models import AnsibleNetworkHost,AnsibleNetworkGroup
+from djansible.models import AnsibleNetworkHost,AnsibleNetworkGroup, Actions, PlayBook
 from django.forms import ModelForm ,CheckboxInput
 from django import forms
 # Create your models here.
@@ -27,5 +27,27 @@ class PostInventoryHost(ModelForm):
             'ansible_user': forms.Textarea(attrs={'cols':100, 'rows':1}),
             'ansible_ssh_pass': forms.Textarea(attrs={'cols':100, 'rows':1}),
             'ansible_become_pass': forms.Textarea(attrs={'cols':100, 'rows':1})
+        }
+    
+class PostPlayBookForm(ModelForm):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all())
+    class Meta:
+        model = PlayBook
+        fields = ['name', 'hosts', 'become','become_method','gather_facts']
+        exclude = ('task',)
+        widgets = {
+            'name': forms.Textarea(attrs={'cols':100, 'rows':1}),
+            'become': forms.Textarea(attrs={'cols':100, 'rows':1}),
+            'become_method': forms.Textarea(attrs={'cols':100, 'rows':1}),
+            'gather_facts': forms.Textarea(attrs={'cols':100, 'rows':1})
+        }
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Actions
+        fields = ['module', 'commands']
+        widgets = {
+            'module': forms.Textarea(attrs={'cols':100, 'rows':1}),
+            'commands': forms.Textarea(attrs={'cols':100, 'rows':1})
         }
 
