@@ -4,6 +4,10 @@ from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm
 from django.contrib import messages
+from django.db.models.fields.related import ManyToManyField
+from djansible.models import PlayBooks
+from itertools import chain
+from djansible.ansible_kit.executor import execute
 
 
 # Create your views here.
@@ -69,9 +73,23 @@ def addPlaybook(request):
             tasks = t_form.save()
             playbook = p_form.save(commit=False)
             playbook.task = tasks
-            playbook.__dict__
+            db_instance2dict(playbook)
             playbook.save()
             messages.success(request, f'Your playbook has been created!')
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name=data['name'],
+                hosts=data['hosts'],
+                become=data['become'],
+                become_method=data['become_method'],
+                gather_facts=data['gather_facts'],
+                tasks=[
+                    dict(action=dict(module=data['module'], commands=data['commands']))
+                 ]
+            ) 
+            result = execute(my_play)
+            print(json.dumps(result.results, indent=4))
             return redirect('Ansible-home')
     else:
         p_form = PostPlayBookForm()
@@ -99,3 +117,27 @@ def addTask(request):
     }
 
     return render(request, 'ansibleweb/post_playbook.html',context)
+
+
+def db_instance2dict(instance):
+    metas = instance._meta
+    data = {}
+    for f in chain(metas.concrete_fields, metas.many_to_many):
+        if isinstance(f, ManyToManyField):
+            data[str(f.name)] = {tmp_object.pk: db_instance2dict(tmp_object)
+                                 for tmp_object in f.value_from_object(instance)}
+        else:
+            data[str(f.name)] = str(getattr(instance, f.name, False))
+    return data
+
+def play():
+    plays = PlayBooks.objects.all().prefetch_related('task')
+    
+    my_play = [{
+        'name':play.name,
+        'hosts':play.hosts, 
+        'become':play.become, 
+        'become_method':play.become_method, 
+        'gather_facts':play.gather_facts, 
+        'tasks':[{'module':actions.module, 'commands':actions.commands} for actions in play.task.all()]} for play in plays]
+

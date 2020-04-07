@@ -64,6 +64,11 @@ class AnsibleServerHost(BaseAnsibleHost):
     class Meta:
         db_table = 'ansible_server_hosts'
 
+
+
+# MULAI disini ya rippp , ini MODEL buat PUSH CONFIGURASI NYAA
+
+
 class Actions(models.Model):
     module = models.CharField(max_length=100)
     commands = models.CharField(max_length=100)
@@ -78,7 +83,13 @@ class PlayBook(models.Model):
     become_method = models.CharField(max_length=100)
     gather_facts = models.CharField(max_length=100)
     task = models.ForeignKey(Actions, on_delete=models.DO_NOTHING)
-    
-
+#ini aku cuma nyoba nyoba kalo pake foreign key sm many to many
+class PlayBooks(models.Model):
+    name = models.CharField(max_length=100)
+    hosts = models.CharField(max_length=100)
+    become = models.CharField(max_length=100)
+    become_method = models.CharField(max_length=100)
+    gather_facts = models.CharField(max_length=100)
+    task = models.ManyToManyField(Actions)
         
 
