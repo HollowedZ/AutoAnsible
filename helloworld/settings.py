@@ -26,7 +26,7 @@ SECRET_KEY = '+d$7lf&40==0=xj*g+s5&*c%z9u$*qp9gxr2jt+))ha-9vh!@4'
 DEBUG = True
 
 #ALLOWED_HOSTS = ['10.33.109.94']
-ALLOWED_HOSTS = ['10.1.1.9']
+ALLOWED_HOSTS = ['192.168.100.145']
 
 # Application definition
 
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'Automation.apps.AutomationConfig',
     'users.apps.UsersConfig',
     'crispy_forms',
-    'djansible.apps.DjansibleConfig',
+    'dj_ansible',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

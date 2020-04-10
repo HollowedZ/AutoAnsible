@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
-from djansible.models import PlayBooks
+#from djansible.models import PlayBooks
 from itertools import chain
-from djansible.ansible_kit.executor import execute
+#from djansible.ansible_kit.executor import execute
 
 
 # Create your views here.
@@ -38,7 +38,6 @@ def home(request):
 
 def about(request):
     return render(request, 'ansibleweb/about.html', {'title': 'About'})
-
 
 def addgroup(request):
     if request.method == 'POST':

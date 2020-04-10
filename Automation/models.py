@@ -1,7 +1,8 @@
 from django.db import models
-from djansible.models import AnsibleNetworkHost,AnsibleNetworkGroup, Actions, PlayBook
+from dj_ansible.models import AnsibleNetworkHost,AnsibleNetworkGroup
 from django.forms import ModelForm ,CheckboxInput
 from django import forms
+from .playbook import Actions, PlayBook
 # Create your models here.
 
 
@@ -50,4 +51,3 @@ class TaskForm(ModelForm):
             'module': forms.Textarea(attrs={'cols':100, 'rows':1}),
             'commands': forms.Textarea(attrs={'cols':100, 'rows':1})
         }
-
