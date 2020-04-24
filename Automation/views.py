@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
 from itertools import chain
+from dj_ansible.ansible_kit import execute
+import json
 #from djansible.ansible_kit.executor import execute
 
 
@@ -68,11 +70,9 @@ def addPlaybook(request):
         p_form = PostPlayBookForm(request.POST)
         t_form = TaskForm(request.POST)
         if p_form.is_valid() and t_form.is_valid():
-            t_form.__dict__
             tasks = t_form.save()
             playbook = p_form.save(commit=False)
             playbook.task = tasks
-            db_instance2dict(playbook)
             playbook.save()
             messages.success(request, f'Your playbook has been created!')
             print(request.POST)
@@ -88,8 +88,15 @@ def addPlaybook(request):
                  ]
             ) 
             result = execute(my_play)
-            print(json.dumps(result.results, indent=4))
-            return redirect('Ansible-home')
+            #print(json.dumps(result.results, indent=4))
+            output = json.dumps(result.results, indent=4)
+            context = {
+                'p_form': p_form,
+                't_form': t_form,
+                'output': output
+            }
+            return render(request, 'ansibleweb/post_playbook.html', context)
+            #return redirect('Ansible-home')
     else:
         p_form = PostPlayBookForm()
         t_form = TaskForm()

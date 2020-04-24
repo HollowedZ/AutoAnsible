@@ -1,10 +1,13 @@
 from django.db import models
 from dj_ansible.models import AnsibleNetworkHost,AnsibleNetworkGroup
-from django.forms import ModelForm ,CheckboxInput
+from django.forms import ModelForm ,CheckboxInput, ModelChoiceField
 from django import forms
 from .playbook import Actions, PlayBook
 # Create your models here.
 
+#class MyModelChoiceField(ModelChoiceField):
+#    def label_from_instance(self, obj):
+#        return "My Object #%i" % obj.name
 
 class PostInventoryGroup(ModelForm):
     class Meta:
@@ -31,7 +34,7 @@ class PostInventoryHost(ModelForm):
         }
     
 class PostPlayBookForm(ModelForm):
-    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all())
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all(), to_field_name="name")
     class Meta:
         model = PlayBook
         fields = ['name', 'hosts', 'become','become_method','gather_facts']
