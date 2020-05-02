@@ -8,16 +8,21 @@ from .playbook import Actions, PlayBook
 #class MyModelChoiceField(ModelChoiceField):
 #    def label_from_instance(self, obj):
 #        return "My Object #%i" % obj.name
+OS_CHOICES =(
+    ('ios', 'cisco'),
+    ('routeros', 'mikrotik')
+)
 
 class PostInventoryGroup(ModelForm):
+    ansible_network_os = forms.ChoiceField(choices = OS_CHOICES)
     class Meta:
         model = AnsibleNetworkGroup
         fields = ['name', 'ansible_connection', 'ansible_network_os', 'ansible_become']
         widgets = {
             'name': forms.Textarea(attrs={'cols':100, 'rows':1}),
-            'ansible_connection': forms.Textarea(attrs={'cols':100, 'rows':1}),
+        #   'ansible_connection': forms.Textarea(attrs={'cols':100, 'rows':1}),
             'ansible_network_os': forms.Textarea(attrs={'cols':100, 'rows':1}),
-            'ansible_become': forms.Textarea(attrs={'cols':100, 'rows':1}),
+            'ansible_become': forms.Textarea(attrs={'cols':100, 'rows':1})
         }
 
 class PostInventoryHost(ModelForm):

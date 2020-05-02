@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
 from itertools import chain
+from dj_ansible.models import AnsibleNetworkHost
 from dj_ansible.ansible_kit import execute
 import json
 #from djansible.ansible_kit.executor import execute
@@ -32,10 +33,37 @@ posts = [
 ]
 @login_required
 def home(request):
+    all_device = AnsibleNetworkHost.objects.all()
     context = {
-        'posts': posts
+        'all_device': len(all_device)
     }
     return render(request, 'ansibleweb/home.html', context)
+
+def devices(request):
+    all_device = AnsibleNetworkHost.objects.all()
+
+    context = {
+        'all_device': all_device
+    }
+    return render(request, 'ansibleweb/device.html', context)
+
+def updatedevice(request, pk):
+    device = AnsibleNetworkHost.objects.get(id=pk)
+    form = PostInventoryHost(instance=device)
+    
+    if request.method == 'POST':
+        form = PostInventoryHost(request.POST, instance=device)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    
+    context = {'form': form}
+    return render(request, 'ansibleweb/post_host.html',context)
+
+def deletedevice(request, id):
+    device = AnsibleNetworkHost.objects.get(pk=id)
+    device.delete()
+    return redirect('device')
 
 
 def about(request):

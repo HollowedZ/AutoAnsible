@@ -16,6 +16,9 @@ urlpatterns = [
     path('host/', views.addhost, name='host-create'),
     path('playbook/', views.addPlaybook, name='playbook-create'),
     path('about/', views.about, name='Ansible-about'),
+    path('device/', views.devices, name='device'),
+    path('update_device/<str:pk>/', views.updatedevice, name='update-device'),
+    path('delete/<int:id>/', views.deletedevice, name='delete-device')
 ]
 
 if settings.DEBUG:

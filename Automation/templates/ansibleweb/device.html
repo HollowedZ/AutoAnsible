@@ -1,0 +1,50 @@
+{% extends "ansibleweb/base.html" %}
+{% block content %}
+<section class="dashboard-counts section-padding">
+    <div class="container fluid dashboard-content">
+        <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+              <div class="page-header">
+                <h2 class="pageheader-title">Create Task</h2>
+                <p class="pageheader-text">Make a PlayBook to run command</p>
+              </div>
+            </div>
+          </div>
+      <div class="row d-flex align-items-md-stretch">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h4>Device List</h4>
+                </div>
+                <div class="card-body">
+                   <table class="table">
+                       <tr>
+                           <th>IP Address</th>
+                           <th>Hostname</th>
+                           <th>Update</th>
+                           <th>Remove</th>
+                       </tr>
+                       {% for device in all_device %}
+                            <tr>
+                                <td>{{ device.ansible_ssh_host }}</td>
+                                <td>{{ device.host }}</td>
+                                <td><a class="btn-sm btn-info" href="{% url 'update-device' device.id %}">Update</a></td>
+                                <td><form action="{% url 'delete-device' device.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-sm btn-danger"> Delete
+                                        </button>
+                                </form>
+
+                                </td>
+                            </tr> 
+                        {% endfor %}
+                   </table>
+                </div>
+            </div>
+            
+        </div>
+      </div>
+    </div>
+</section>
+
+{% endblock content %}
