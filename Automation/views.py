@@ -2,14 +2,15 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
-from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm
+from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
 from itertools import chain
-from dj_ansible.models import AnsibleNetworkHost
+from dj_ansible.models import AnsibleNetworkHost, AnsibleNetworkGroup
 from dj_ansible.ansible_kit import execute
 import json
+from datetime import datetime
 #from djansible.ansible_kit.executor import execute
 
 
@@ -41,11 +42,27 @@ def home(request):
 
 def devices(request):
     all_device = AnsibleNetworkHost.objects.all()
+    all_group = AnsibleNetworkGroup.objects.all()
 
     context = {
-        'all_device': all_device
+        'all_device': all_device,
+        'all_group': all_group
     }
     return render(request, 'ansibleweb/device.html', context)
+
+def updategroup(request, pk):
+    group = AnsibleNetworkGroup.objects.get(id=pk)
+    form = PostInventoryGroup(instance=group)
+
+    if request.method == 'POST':
+        form = PostInventoryGroup(request.POST, instance=device)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    
+    context = {'form': form}
+    return render(request, 'ansibleweb/post_group.html', context)
+
 
 def updatedevice(request, pk):
     device = AnsibleNetworkHost.objects.get(id=pk)
@@ -59,6 +76,11 @@ def updatedevice(request, pk):
     
     context = {'form': form}
     return render(request, 'ansibleweb/post_host.html',context)
+
+def deletegroup(request, id):
+    group = AnsibleNetworkGroup.objects.get(pk=id)
+    group.delete()
+    return redirect('device')
 
 def deletedevice(request, id):
     device = AnsibleNetworkHost.objects.get(pk=id)
@@ -113,8 +135,8 @@ def addPlaybook(request):
                 gather_facts=data['gather_facts'],
                 tasks=[
                     dict(action=dict(module=data['module'], commands=data['commands']))
-                 ]
-            ) 
+                    ]
+                ) 
             result = execute(my_play)
             #print(json.dumps(result.results, indent=4))
             output = json.dumps(result.results, indent=4)
@@ -175,3 +197,10 @@ def play():
         'gather_facts':play.gather_facts, 
         'tasks':[{'module':actions.module, 'commands':actions.commands} for actions in play.task.all()]} for play in plays]
 
+def log(request):
+    logs = log.objects.all()
+
+    context = {
+        'logs': logs
+    }
+    return render(request, 'ansibleweb/home.html', context)

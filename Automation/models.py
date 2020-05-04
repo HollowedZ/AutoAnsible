@@ -59,3 +59,13 @@ class TaskForm(ModelForm):
             'module': forms.Textarea(attrs={'cols':100, 'rows':1}),
             'commands': forms.Textarea(attrs={'cols':100, 'rows':1})
         }
+
+class log(models.Model):
+    target = models.CharField(max_length=255)
+    action = models.CharField(max_length=255)
+    status = models.CharField(max_length=255)
+    time = models.CharField(max_length=255)
+    messages = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.target, self.action, self.status)

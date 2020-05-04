@@ -18,7 +18,10 @@ urlpatterns = [
     path('about/', views.about, name='Ansible-about'),
     path('device/', views.devices, name='device'),
     path('update_device/<str:pk>/', views.updatedevice, name='update-device'),
-    path('delete/<int:id>/', views.deletedevice, name='delete-device')
+    path('delete_device/<int:id>/', views.deletedevice, name='delete-device'),
+    path('log/', views.log, name='log-report'),
+    path('update_group/<str:pk>/', views.updategroup, name='update-group'),
+    path('delete_group/<int:id>/', views.deletegroup, name='delete-group')
 ]
 
 if settings.DEBUG:
