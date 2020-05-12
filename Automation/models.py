@@ -69,3 +69,7 @@ class log(models.Model):
 
     def __str__(self):
         return "{} - {} - {}".format(self.target, self.action, self.status)
+
+class c_hostname(models.Model):
+    name = models.CharField(max_length=255)
+    hosts = models.CharField(max_length=255)

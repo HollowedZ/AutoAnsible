@@ -53,15 +53,61 @@
             <ul id="side-main-menu" class="side-menu list-unstyled">                  
               <li><a href="{% url 'Ansible-home' %}"> <i class="icon-home"></i>Home                             </a></li>
               <li><a href="{% url 'group-create' %}"> <i class="icon-form"></i>Add Device                            </a></li>
+              <li class="nav-item ">
+                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
+                    data-target="#submenu-2" aria-controls="submenu-2"><i class="fa fa-fw fa-tasks"></i>Configuration
+                    <span class="badge badge-success"></span></a>
+                <div id="submenu-2" class="collapse submenu" style="">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
+                                data-target="#submenu-2-1" aria-controls="submenu-2-1"><span class="mr-2"></span>Cisco</a>
+                            <div id="submenu-2-1" class="collapse submenu" style="">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'name-cisco' %}">Hostname</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'vlan-cisco' %}">VLAN</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'ospf-cisco' %}">OSPF</a>
+                                    </li>
+                                    <li class="nav-item">
+                                      <a class="nav-link" href="/config/routing_bgp">ACL</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
+                              data-target="#submenu-2-2" aria-controls="submenu-2-2"><span class="mr-2"></span>Mikrotik</a>
+                          <div id="submenu-2-2" class="collapse submenu" style="">
+                              <ul class="nav flex-column">
+                                  <li class="nav-item">
+                                      <a class="nav-link" href="/config/routing_static">Static</a>
+                                  </li>
+                                  <li class="nav-item">
+                                      <a class="nav-link" href="/config/routing_dynamic">Dynamic</a>
+                                  </li>
+                                  <li class="nav-item">
+                                      <a class="nav-link" href="/config/routing_bgp">BGP</a>
+                                  </li>
+                              </ul>
+                          </div>
+                      </li>
+                    </ul>
+                </div>
+            </li>
+            <li><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Backup Device </a>
+              <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
+                <li><a href="{% url 'backup-cisco' %}">CISCO</a></li>
+                <li><a href="#">MIKROTIK</a></li>
+              </ul>
+            </li>
               <li><a href="{% url 'playbook-create' %}"> <i class="icon-interface-windows"></i>Create Task                            </a></li>
               <li><a href="login.html"> <i class="icon-interface-windows"></i>Backup Device                            </a></li>
-              <li><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Example dropdown </a>
-                <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
-                  <li><a href="#">Page</a></li>
-                  <li><a href="#">Page</a></li>
-                  <li><a href="#">Page</a></li>
-                </ul>
-              </li>
+              
               <li> <a href="#"> <i class="icon-mail"></i>Demo
                   <div class="badge badge-warning">6 New</div></a></li>
             </ul>
