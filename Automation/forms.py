@@ -25,3 +25,6 @@ class ospf_cisco(forms.Form):
 
 class ciscobackup(forms.Form):
     hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ios'), to_field_name="name")
+
+class ciscorestore(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ios'), to_field_name="name")

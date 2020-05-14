@@ -1,15 +1,15 @@
 Building configuration...
 
-Current configuration : 1581 bytes
+Current configuration : 1718 bytes
 !
-! Last configuration change at 21:42:00 UTC Wed May 6 2020 by admin
+! Last configuration change at 13:05:01 UTC Thu May 14 2020 by admin
 !
 version 15.4
 service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
 !
-hostname brot
+hostname admin
 !
 boot-start-marker
 boot-end-marker
@@ -17,7 +17,17 @@ boot-end-marker
 !
 enable secret 5 $1$EMqb$M.dxOTm32bjAoWLTJlFia1
 !
-no aaa new-model
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local 
+!
+!
+!
+!
+!
+aaa session-id common
 !
 !
 !
@@ -51,7 +61,7 @@ license udi pid CISCO2911/K9 sn FGL193210AP
 license boot module c2900 technology-package securityk9
 !
 !
-username admin secret 5 $1$S19L$e8u.B.C3YD.r8k67f269u.
+username admin privilege 15 secret 5 $1$S19L$e8u.B.C3YD.r8k67f269u.
 !
 redundancy
 !
@@ -59,6 +69,7 @@ redundancy
 !
 !
 !
+ip scp server enable
 ! 
 !
 !
@@ -103,6 +114,8 @@ ip route 0.0.0.0 0.0.0.0 10.33.107.254
 !
 !
 !
+!
+!
 control-plane
 !
 !
@@ -116,7 +129,6 @@ line 2
  transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
  stopbits 1
 line vty 0 4
- login local
  transport input ssh
 !
 scheduler allocate 20000 1000

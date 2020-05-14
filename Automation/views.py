@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log
-from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup
+from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
@@ -336,3 +336,35 @@ def backupcisco(request):
     }
     return render(request, 'ansibleweb/ciscobackup.html', context)
 
+def restorecisco(request):
+    if request.method == 'POST':
+        restore = ciscorestore(request.POST)
+        if restore.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="restore",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                tasks=[
+                    dict(net_put=dict(src='/home/indra/autonet/AutoAnsible/backup/{{inventory_hostname}}.config', protocol='scp', dest='flash0:/{{inventory_hostname}}.config')),
+                    dict(action=dict(module='ios_command', commands=['config replace flash:{{inventory_hostname}}.config force']))
+                    ]
+                )
+            result = execute(my_play)
+            #print(json.dumps(result.results, indent=4))
+            output = json.dumps(result.results, indent=4)
+            context = {
+                'restore': restore,
+                'output': output
+            }
+            return render(request, 'ansibleweb/ciscorestore.html', context)
+    else:
+        restore = ciscorestore()
+    
+    context = {
+        'restore': restore
+    }
+    return render(request, 'ansibleweb/ciscorestore.html', context)
