@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log
-from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore
+from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore, hostnamehuawei, ospf_huawei, intervlan_huawei, huaweibackup
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
@@ -368,3 +368,133 @@ def restorecisco(request):
         'restore': restore
     }
     return render(request, 'ansibleweb/ciscorestore.html', context)
+
+
+# Perangkat Huawei
+
+def namehuawei(request):
+    if request.method=="POST":
+        hostname = hostnamehuawei(request.POST)
+        if hostname.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="conf name",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                tasks=[
+                    dict(action=dict(module='ce_config', lines=data['hostname']))
+                ]
+            )
+            result = execute(my_play)
+            output = json.dumps(result.results, indent=4)
+            context = {
+                'hostname': hostname,
+                'output': output
+            }
+            return render(request, 'ansibleweb/huawei/huaweihostname.html', context)
+    else:
+        hostname = hostnamehuawei()
+
+    context = {
+        'hostname': hostname
+    }
+    return render(request, 'ansibleweb/huawei/huaweihostname.html', context)
+
+def ospfhuawei(request):
+    if request.method=='POST':
+        ospf = ospf_huawei(request.POST)
+        if ospf.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="Configure OSPF",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                tasks=[
+                    dict(action=dict(module='ce_config', lines=['ospf', data['area'], data['network']]))
+                ]
+            )
+            result = execute(my_play)
+            output = json.dumps(result.results, indent=4)
+            context = {
+                'ospf': ospf,
+                'output': output
+            }
+            return render(request, 'ansibleweb/huawei/huaweiospf.html', context)
+    else:
+        ospf = ospf_huawei()
+    
+    context = {
+        'ospf': ospf
+    }
+    return render(request, 'ansibleweb/huawei/huaweiospf.html', context)
+
+def ivlan_huawei(request):
+    if request.method=='POST':
+        ivlan = intervlan_huawei(request.POST)
+        if ivlan.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="Configure Inter VLAN",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                tasks=[
+                    dict(action=dict(module='ce_config', lines=[data['interface'], data['ipadd'], data['cmd']]))
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'ivlan': ivlan,
+            'output': output
+        }
+        return render(request, 'ansibleweb/huawei/ivlan_huawei.html', context)
+    else:
+        ivlan = intervlan_huawei()
+
+    context = {
+        'ivlan': ivlan
+    }
+    return render(request, 'ansibleweb/huawei/ivlan_huawei.html', context)
+
+def backuphuawei(request):
+    if request.method=='POST':
+        backup = huaweibackup(request.POST)
+        if backup.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="Backup Configuration Huawei",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                tasks=[
+                    dict(action=dict(module='ce_config', lines=['sysname {{ inventory_hostname }}'], backup='yes'), register='output'),
+                    dict(action=dict(module='copy', src="{{output.backup_path}}", dest="./backup/{{inventory_hostname}}.config"))
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'backup': backup,
+            'output': output
+        }
+        return render(request, 'ansibleweb/huawei/huaweibackup.html', context)
+    else:
+        backup = huaweibackup()
+
+    context = {
+        'backup': backup
+    }
+    return render(request, 'ansibleweb/huawei/huaweibackup.html', context)
+
+

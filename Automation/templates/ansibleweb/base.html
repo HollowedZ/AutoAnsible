@@ -96,6 +96,26 @@
                               </ul>
                           </div>
                       </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false"
+                            data-target="#submenu-2-3" aria-controls="submenu-2-3"><span class="mr-2"></span>Huawei</a>
+                        <div id="submenu-2-3" class="collapse submenu" style="">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'name-huawei' %}">Hostname</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'ivlan-huawei' %}">Inter-VLAN</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'ospf-huawei' %}">OSPF</a>
+                                </li>
+                                <li class="nav-item">
+                                  <a class="nav-link" href="/config/routing_bgp">ACL</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
                     </ul>
                 </div>
             </li>
@@ -103,6 +123,7 @@
               <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
                 <li><a href="{% url 'backup-cisco' %}">CISCO</a></li>
                 <li><a href="#">MIKROTIK</a></li>
+                <li><a href="{% url 'backup-huawei' %}">HUAWEI</a></li>
               </ul>
             </li>
             <li><a href="#hehe" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Restore Device </a>

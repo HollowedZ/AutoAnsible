@@ -6,8 +6,8 @@
             <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                   <div class="page-header">
-                    <h2 class="pageheader-title">OSPF</h2>
-                    <p class="pageheader-text">Create OSPF on network device</p>
+                    <h2 class="pageheader-title">Configure Hostname Huawei</h2>
+                    <p class="pageheader-text">Create task to configure hostname device</p>
                   </div>
                 </div>
               </div>
@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{ospf.hosts}}
+                            {{hostname.hosts}}
                         </div>
                     </div>
                 </div>
@@ -33,24 +33,11 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Global Config</label>
+                        <label>Config</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{ospf.parents}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row spacer">
-
-                    <div class="col-2">
-                        <label>Config ospf</label>
-                    </div>
-                    <div class="col-4">
-                        <div class="input-group">
-                            {{ospf.lines}}
+                            {{hostname.hostname}}
                         </div>
                     </div>
                 </div>

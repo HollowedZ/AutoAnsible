@@ -28,3 +28,21 @@ class ciscobackup(forms.Form):
 
 class ciscorestore(forms.Form):
     hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ios'), to_field_name="name")
+
+class hostnamehuawei(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")
+    hostname = forms.CharField()
+
+class ospf_huawei(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")
+    area = forms.CharField()
+    network = forms.CharField()
+
+class intervlan_huawei(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")
+    interface = forms.CharField()
+    ipadd = forms.CharField()
+    cmd = forms.CharField()
+
+class huaweibackup(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")

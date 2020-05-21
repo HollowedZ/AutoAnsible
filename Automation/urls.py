@@ -4,7 +4,7 @@ from . import views
 from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco
+from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei
 
 urlpatterns = [
     path('', views.home, name='Ansible-home'),
@@ -26,7 +26,11 @@ urlpatterns = [
     path('vlancisco/', views.vlancisco, name='vlan-cisco'),
     path('ospfcisco/', views.ospfcisco, name='ospf-cisco'),
     path('backupcisco/', views.backupcisco, name='backup-cisco'),
-    path('restorecisco/', views.restorecisco, name='restore-cisco')
+    path('restorecisco/', views.restorecisco, name='restore-cisco'),
+    path('namehuawei/', views.namehuawei, name='name-huawei'),
+    path('ospfhuawei/', views.ospfhuawei, name='ospf-huawei'),
+    path('ivlanhuawei/', views.ivlan_huawei, name='ivlan-huawei'),
+    path('backuphuawei/', views.backuphuawei, name='backup-huawei')
 ]
 
 if settings.DEBUG:

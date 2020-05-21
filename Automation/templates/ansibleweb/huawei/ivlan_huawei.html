@@ -6,8 +6,8 @@
             <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                   <div class="page-header">
-                    <h2 class="pageheader-title">OSPF</h2>
-                    <p class="pageheader-text">Create OSPF on network device</p>
+                    <h2 class="pageheader-title">Inter-VLAN Huawei</h2>
+                    <p class="pageheader-text">Create Inter-VLAN on device network</p>
                   </div>
                 </div>
               </div>
@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{ospf.hosts}}
+                            {{ivlan.hosts}}
                         </div>
                     </div>
                 </div>
@@ -33,11 +33,11 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Global Config</label>
+                        <label>Interface</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{ospf.parents}}
+                            {{ivlan.interface}}
                         </div>
                     </div>
                 </div>
@@ -46,11 +46,24 @@
                 <div class="row spacer">
 
                     <div class="col-2">
-                        <label>Config ospf</label>
+                        <label>Add Ip Address</label>
                     </div>
                     <div class="col-4">
                         <div class="input-group">
-                            {{ospf.lines}}
+                            {{ivlan.ipadd}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row spacer">
+
+                    <div class="col-2">
+                        <label>Command</label>
+                    </div>
+                    <div class="col-4">
+                        <div class="input-group">
+                            {{ivlan.cmd}}
                         </div>
                     </div>
                 </div>
