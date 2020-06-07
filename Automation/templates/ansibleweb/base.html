@@ -33,6 +33,7 @@
     <!-- Tweaks for older IEs--><!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
         <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/vis.css' %}">
   </head>
   <body>
        <!-- Side Navbar -->
@@ -85,13 +86,13 @@
                           <div id="submenu-2-2" class="collapse submenu" style="">
                               <ul class="nav flex-column">
                                   <li class="nav-item">
-                                      <a class="nav-link" href="/config/routing_static">Static</a>
+                                      <a class="nav-link" href="{% url 'name-mikrotik' %}">Hostname</a>
                                   </li>
                                   <li class="nav-item">
-                                      <a class="nav-link" href="/config/routing_dynamic">Dynamic</a>
+                                      <a class="nav-link" href="{% url 'ipadd-mikrotik' %}">IP Address</a>
                                   </li>
                                   <li class="nav-item">
-                                      <a class="nav-link" href="/config/routing_bgp">BGP</a>
+                                      <a class="nav-link" href="{% url 'ospf-mikrotik' %}">OSPF</a>
                                   </li>
                               </ul>
                           </div>
@@ -122,7 +123,7 @@
             <li><a href="#exampledropdownDropdown" aria-expanded="false" data-toggle="collapse"> <i class="icon-interface-windows"></i>Backup Device </a>
               <ul id="exampledropdownDropdown" class="collapse list-unstyled ">
                 <li><a href="{% url 'backup-cisco' %}">CISCO</a></li>
-                <li><a href="#">MIKROTIK</a></li>
+                <li><a href="{% url 'backup-mikrotik' %}">MIKROTIK</a></li>
                 <li><a href="{% url 'backup-huawei' %}">HUAWEI</a></li>
               </ul>
             </li>
@@ -130,8 +131,10 @@
               <ul id="hehe" class="collapse list-unstyled ">
                 <li><a href="{% url 'restore-cisco' %}">CISCO</a></li>
                 <li><a href="#">MIKROTIK</a></li>
+                <li><a href="{% url 'restore-huawei' %}">HUAWEI</a></li>
               </ul>
             </li>
+            <li><a href="{% url 'topologi' %}"> <i class="icon-form"></i>Topologi                            </a></li>
             </ul>
           </div>
         </div>
@@ -242,6 +245,8 @@
     <script src="{% static 'vendor/jquery-validation/jquery.validate.min.js' %}"></script>
     <script src="{% static 'vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' %}"></script>
     <script src="{% static 'js/charts-home.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/vis.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/topologi.js' %}"></script>
     <!-- Main File-->
     <script src="{% static 'js/front.js' %}"></script>
   </body>

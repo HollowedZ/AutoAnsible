@@ -4,10 +4,11 @@ from . import views
 from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei
+from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei, namemikrotik, ipaddmtk, ospf_mikrotik, backupmikrotik, topologi, restorehuawei
 
 urlpatterns = [
     path('', views.home, name='Ansible-home'),
+    path('topologi/', views.topologi, name='topologi'),
     path('register/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
@@ -30,7 +31,12 @@ urlpatterns = [
     path('namehuawei/', views.namehuawei, name='name-huawei'),
     path('ospfhuawei/', views.ospfhuawei, name='ospf-huawei'),
     path('ivlanhuawei/', views.ivlan_huawei, name='ivlan-huawei'),
-    path('backuphuawei/', views.backuphuawei, name='backup-huawei')
+    path('backuphuawei/', views.backuphuawei, name='backup-huawei'),
+    path('restorehuawei/', views.restorehuawei, name='restore-huawei'),
+    path('namemikrotik/', views.namemikrotik, name='name-mikrotik'),
+    path('ipaddmtk/', views.ipaddmtk, name='ipadd-mikrotik'),
+    path('ospf_mikrotik/', views.ospfmikrotik, name='ospf-mikrotik'),
+    path('backupmikrotik/', views.backupmikrotik, name='backup-mikrotik')
 ]
 
 if settings.DEBUG:

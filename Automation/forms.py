@@ -29,6 +29,8 @@ class ciscobackup(forms.Form):
 class ciscorestore(forms.Form):
     hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ios'), to_field_name="name")
 
+#HUAWEI FORM ----------------------------------------
+
 class hostnamehuawei(forms.Form):
     hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")
     hostname = forms.CharField()
@@ -46,3 +48,32 @@ class intervlan_huawei(forms.Form):
 
 class huaweibackup(forms.Form):
     hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")
+
+class huaweirestore(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='ce'), to_field_name="name")
+
+
+#MIKROTIK FORM -------------------------------------
+class hostnamemikrotik(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='routeros'), to_field_name="name")
+    hostname = forms.CharField()
+
+class ipaddmikrotik(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='routeros'), to_field_name="name")
+    ipadd = forms.CharField()
+    interface = forms.CharField()
+
+AREA_OSPF = (
+    ('backbone', 'backbone'),
+    ('standart', 'standart'),
+    ('nssa', 'nssa'),
+    ('stub', 'stub')
+)
+
+class ospf_mikrotik(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='routeros'), to_field_name="name")
+    network = forms.CharField()
+    area = forms.ChoiceField(choices=AREA_OSPF) 
+
+class mikrotikbackup(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='routeros'), to_field_name="name")

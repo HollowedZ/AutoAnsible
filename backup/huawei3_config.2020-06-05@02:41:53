@@ -17,8 +17,9 @@ aaa
  accounting-scheme default
  domain default 
  domain default_admin 
- local-user admin password cipher %$%$Zy"A%}(Y4GDH_z:QFMx&@(2y%$%$
+ local-user admin password cipher %$%$\[oW,'.d-KwxuTY^K+)TGfQ-%$%$
  local-user admin privilege level 15
+ local-user admin ftp-directory flash:/
  local-user admin service-type ssh
 #
 firewall zone Local
@@ -47,6 +48,7 @@ interface GigabitEthernet0/0/1
 #
 interface NULL0
 #
+ sftp server enable 
  stelnet server enable 
 #
 user-interface con 0

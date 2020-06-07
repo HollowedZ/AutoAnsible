@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log
-from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore, hostnamehuawei, ospf_huawei, intervlan_huawei, huaweibackup
+from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore, hostnamehuawei, ospf_huawei, intervlan_huawei, huaweibackup, hostnamemikrotik, ipaddmikrotik, ospf_mikrotik, mikrotikbackup, huaweirestore
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
@@ -40,6 +40,9 @@ def home(request):
         'all_device': len(all_device)
     }
     return render(request, 'ansibleweb/home.html', context)
+
+def topologi(request):
+    return render(request, 'ansibleweb/topologi.html')
 
 def devices(request):
     all_device = AnsibleNetworkHost.objects.all()
@@ -479,7 +482,7 @@ def backuphuawei(request):
                 gather_facts='no',
                 tasks=[
                     dict(action=dict(module='ce_config', lines=['sysname {{ inventory_hostname }}'], backup='yes'), register='output'),
-                    dict(action=dict(module='copy', src="{{output.backup_path}}", dest="./backup/{{inventory_hostname}}.config"))
+                    dict(action=dict(module='copy', src="{{output.backup_path}}", dest="./backup/{{inventory_hostname}}.cfg"))
                 ]
             )
         result = execute(my_play)
@@ -496,5 +499,262 @@ def backuphuawei(request):
         'backup': backup
     }
     return render(request, 'ansibleweb/huawei/huaweibackup.html', context)
+
+def restorehuawei(request):
+    if request.method=='POST':
+        restore = huaweirestore(request.POST)
+        if restore.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="restore",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='cli_command', command='reset saved-configuration', prompt='Continue', answer='y'))
+                ]
+            )
+            my_play2 = dict(
+                name="restore2",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='cli_command', command='delete {{inventory_hostname}}startup.cfg', prompt='delete', answer='y'))
+                ]
+            )
+            my_play3 = dict(
+                name="restore3",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='cli_command', command='delete {{inventory_hostname}}nextup.cfg', prompt='delete', answer='y'))
+                ]
+            )
+            my_play4 = dict(
+                name="restore4",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(net_put=dict(src='./backup/{{inventory_hostname}}.cfg', protocol='scp', dest='flash:/{{inventory_hostname}}startup.cfg'))
+                ]
+            )
+            my_play5 = dict(
+                name="restore4",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(net_put=dict(src='./backup/{{inventory_hostname}}.cfg', protocol='scp', dest='flash:/{{inventory_hostname}}nextup.cfg'))
+                ]
+            )
+            my_play6 = dict(
+                name="restore4",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='ce_command', commands='startup saved-configuration {{inventory_hostname}}startup.cfg'))
+                ]
+            )                        
+            my_play7 = dict(
+                name="restore5",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='ce_command', commands='startup saved-configuration {{inventory_hostname}}nextup.cfg'))
+                ]
+            )
+        result = execute(my_play)
+        result2 = execute(my_play2)
+        result3 = execute(my_play3)
+        result4 = execute(my_play4)
+        result5 = execute(my_play5)
+        result6 = execute(my_play6)
+        result7 = execute(my_play7)
+        output = json.dumps(result7.results, indent=4)
+        context = {
+            'restore': restore,
+            'output': output
+        }
+        return render(request, 'ansibleweb/huawei/restorehuawei.html',context)
+    else:
+        restore = huaweirestore()
+        
+    context= {
+        'restore': restore
+    }
+    return render(request, 'ansibleweb/huawei/restorehuawei.html',context)
+
+#MIKROTIK CONFIG --------------
+
+def namemikrotik(request):
+    if request.method=='POST':
+        name = hostnamemikrotik(request.POST)
+        if name.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="hostname",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='routeros_command', commands='/system identity set name='+data['hostname']))
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'name': name,
+            'output': output
+        }
+        return render(request, 'ansibleweb/mikrotik/namemikrotik.html', context)
+    else:
+        name = hostnamemikrotik()
+        
+    context = {
+        'name': name
+    }
+    return render(request, 'ansibleweb/mikrotik/namemikrotik.html', context)
+    
+def ipaddmtk(request):
+    if request.method=='POST':
+        ipadd = ipaddmikrotik(request.POST)
+        if ipadd.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="Ip address",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='routeros_command', commands='/ip address add address='+data['ipadd']+' interface='+data['interface']))
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'ipadd': ipadd,
+            'output': output
+        }
+        return render(request, 'ansibleweb/mikrotik/ipaddmikrotik.html', context)
+    else:
+        ipadd = ipaddmikrotik()
+        
+    context = {
+        'ipadd': ipadd
+    }
+    return render(request, 'ansibleweb/mikrotik/ipaddmikrotik.html', context)
+
+def ospfmikrotik(request):
+    if request.method=='POST':
+        ospf = ospf_mikrotik(request.POST)
+        if ospf.is_valid():
+            print(request.POST)
+            data =request.POST
+            my_play = dict(
+                name="OSPF",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='routeros_command', commands='/routing ospf network add network='+data['network']+' area='+data['area']))
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'ospf': ospf,
+            'output': output
+        }
+        return render(request, 'ansibleweb/mikrotik/ospfmikrotik.html', context)
+    else:
+        ospf = ospf_mikrotik()
+        
+    context = {
+        'ospf': ospf
+    }
+    return render(request, 'ansibleweb/mikrotik/ospfmikrotik.html', context)
+    
+def backupmikrotik(request):
+    if request.method=='POST':
+        backup = mikrotikbackup(request.POST)
+        if backup.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play= dict(
+                name="Backup Mikrotik",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(action=dict(module='routeros_command', commands='/system backup save name={{ inventory_hostname }} password={{ ansible_password }}')),
+                    dict(net_get=dict(src="./{{ inventory_hostname }}.backup", protocol='scp', dest='./backup/{{ inventory_hostname}}.backup'))
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'backup': backup,
+            'output': output
+        }
+        return render(request, 'ansibleweb/mikrotik/backupmikrotik.html', context)
+    else:
+        backup = mikrotikbackup()
+        
+    context = {
+        'backup': backup
+    }
+    return render(request, 'ansibleweb/mikrotik/backupmikrotik.html', context)
 
 
