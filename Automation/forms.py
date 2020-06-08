@@ -77,3 +77,6 @@ class ospf_mikrotik(forms.Form):
 
 class mikrotikbackup(forms.Form):
     hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='routeros'), to_field_name="name")
+
+class mikrotikrestore(forms.Form):
+        hosts = forms.ModelChoiceField(queryset=AnsibleNetworkGroup.objects.all().filter(ansible_network_os='routeros'), to_field_name="name")

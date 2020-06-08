@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log
-from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore, hostnamehuawei, ospf_huawei, intervlan_huawei, huaweibackup, hostnamemikrotik, ipaddmikrotik, ospf_mikrotik, mikrotikbackup, huaweirestore
+from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore, hostnamehuawei, ospf_huawei, intervlan_huawei, huaweibackup, hostnamemikrotik, ipaddmikrotik, ospf_mikrotik, mikrotikbackup, huaweirestore, mikrotikrestore
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
@@ -738,12 +738,26 @@ def backupmikrotik(request):
                     dict(ansible_command_timeout=120)
                 ],
                 tasks=[
+                    dict(file=dict(path='./backup/{{inventory_hostname}}.backup', state='absent'))
+                ]
+            )            
+            my_play2= dict(
+                name="Backup Mikrotik",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
                     dict(action=dict(module='routeros_command', commands='/system backup save name={{ inventory_hostname }} password={{ ansible_password }}')),
                     dict(net_get=dict(src="./{{ inventory_hostname }}.backup", protocol='scp', dest='./backup/{{ inventory_hostname}}.backup'))
                 ]
             )
         result = execute(my_play)
-        output = json.dumps(result.results, indent=4)
+        result2 = execute(my_play2)
+        output = json.dumps(result2.results, indent=4)
         context = {
             'backup': backup,
             'output': output
@@ -757,4 +771,37 @@ def backupmikrotik(request):
     }
     return render(request, 'ansibleweb/mikrotik/backupmikrotik.html', context)
 
-
+def restoremikrotik(request):
+    if request.method=='POST':
+        restore = mikrotikrestore(request.POST)
+        if restore.is_valid():
+            print(request.POST)
+            data = request.POST
+            my_play = dict(
+                name="Restore Mikrotik",
+                hosts=data['hosts'],
+                become='yes',
+                become_method='enable',
+                gather_facts='no',
+                vars=[
+                    dict(ansible_command_timeout=120)
+                ],
+                tasks=[
+                    dict(net_put=dict(src='./backup/{{inventory_hostname}}.backup', protocol='scp', dest='./{{inventory_hostname}}.backup')),
+                    dict(action=dict(module='cli_command', command=':execute {/system backup load name=mtk2 password=mikrotik;}', prompt='Restore and reboot', answer='y'))                    
+                ]
+            )
+        result = execute(my_play)
+        output = json.dumps(result.results, indent=4)
+        context = {
+            'restore': restore,
+            'output': output
+        }
+        return render(request, 'ansibleweb/mikrotik/restoremikrotik.html', context)
+    else:
+        restore = mikrotikrestore()
+    
+    context = {
+        'restore': restore
+    }
+    return render(request, 'ansibleweb/mikrotik/restoremikrotik.html', context)

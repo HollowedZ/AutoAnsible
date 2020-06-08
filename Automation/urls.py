@@ -4,7 +4,7 @@ from . import views
 from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei, namemikrotik, ipaddmtk, ospf_mikrotik, backupmikrotik, topologi, restorehuawei
+from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei, namemikrotik, ipaddmtk, ospf_mikrotik, backupmikrotik, topologi, restorehuawei, restoremikrotik
 
 urlpatterns = [
     path('', views.home, name='Ansible-home'),
@@ -36,7 +36,8 @@ urlpatterns = [
     path('namemikrotik/', views.namemikrotik, name='name-mikrotik'),
     path('ipaddmtk/', views.ipaddmtk, name='ipadd-mikrotik'),
     path('ospf_mikrotik/', views.ospfmikrotik, name='ospf-mikrotik'),
-    path('backupmikrotik/', views.backupmikrotik, name='backup-mikrotik')
+    path('backupmikrotik/', views.backupmikrotik, name='backup-mikrotik'),
+    path('restoremikrotik/', views.restoremikrotik, name='restore-mikrotik')
 ]
 
 if settings.DEBUG:
