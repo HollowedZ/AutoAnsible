@@ -60,6 +60,7 @@
                                             <td>{{ device.ansible_ssh_host }}</td>
                                             <td>{{ device.host }}</td>
                                             <td><a class="btn-sm btn-info" href="{% url 'update-device' device.id %}">Update</a></td>
+                                            <td><a class="btn-sm btn-info" href="{% url 'info-device' device.id %}">PORT</a></td>
                                             <td><form action="{% url 'delete-device' device.id %}" method="post" class="d-inline">
                                                     {% csrf_token %}
                                                     <button type="submit" class="btn-sm btn-danger"> Delete

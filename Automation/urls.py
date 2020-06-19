@@ -4,7 +4,7 @@ from . import views
 from users import views as user_views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei, namemikrotik, ipaddmtk, ospf_mikrotik, backupmikrotik, topologi, restorehuawei, restoremikrotik
+from .views import PostInventoryGroup, PostInventoryHost, namecisco, vlancisco, ospfcisco, backupcisco, restorecisco, namehuawei, ospfhuawei, ivlan_huawei, backuphuawei, namemikrotik, ipaddmtk, ospf_mikrotik, backupmikrotik, topologi, restorehuawei, restoremikrotik, infodevice, addportdevice
 
 urlpatterns = [
     path('', views.home, name='Ansible-home'),
@@ -17,7 +17,9 @@ urlpatterns = [
     path('host/', views.addhost, name='host-create'),
     path('playbook/', views.addPlaybook, name='playbook-create'),
     path('about/', views.about, name='Ansible-about'),
-    path('device/', views.devices, name='device'),
+    path('addportdevice/', views.addportdevice, name='port-device'),
+    path('device/', views.devicess, name='device'),
+    path('infodevice/<str:pk>/', views.infodevice, name='info-device'),
     path('update_device/<str:pk>/', views.updatedevice, name='update-device'),
     path('delete_device/<int:id>/', views.deletedevice, name='delete-device'),
     path('log/', views.log, name='log-report'),

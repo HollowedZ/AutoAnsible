@@ -1,5 +1,5 @@
 from django.db import models
-from dj_ansible.models import AnsibleNetworkHost,AnsibleNetworkGroup
+from dj_ansible.models import AnsibleNetworkHost,AnsibleNetworkGroup, devices
 from django.forms import ModelForm ,CheckboxInput, ModelChoiceField
 from django import forms
 from .playbook import Actions, PlayBook
@@ -10,7 +10,8 @@ from .playbook import Actions, PlayBook
 #        return "My Object #%i" % obj.name
 OS_CHOICES =(
     ('ios', 'cisco'),
-    ('routeros', 'mikrotik')
+    ('routeros', 'mikrotik'),
+    ('ce', 'huawei')
 )
 
 class PostInventoryGroup(ModelForm):
@@ -73,3 +74,10 @@ class log(models.Model):
 class c_hostname(models.Model):
     name = models.CharField(max_length=255)
     hosts = models.CharField(max_length=255)
+
+class group(forms.Form):
+    name = forms.CharField(max_length=255)
+    os = forms.ChoiceField(choices = OS_CHOICES)
+
+class addinfodevice(forms.Form):
+    hosts = forms.ModelChoiceField(queryset=AnsibleNetworkHost.objects.all())

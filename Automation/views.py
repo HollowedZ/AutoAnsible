@@ -2,13 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from users.forms import UserRegisterForm
 from django.contrib.auth.decorators import login_required
-from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log
+from .models import PostInventoryGroup, PostInventoryHost ,PostPlayBookForm, TaskForm, log, group, addinfodevice
 from .forms import hostnamecisco, vlan_cisco, ospf_cisco, ciscobackup, ciscorestore, hostnamehuawei, ospf_huawei, intervlan_huawei, huaweibackup, hostnamemikrotik, ipaddmikrotik, ospf_mikrotik, mikrotikbackup, huaweirestore, mikrotikrestore
 from django.contrib import messages
 from django.db.models.fields.related import ManyToManyField
 #from djansible.models import PlayBooks
 from itertools import chain
-from dj_ansible.models import AnsibleNetworkHost, AnsibleNetworkGroup
+from dj_ansible.models import AnsibleNetworkHost, AnsibleNetworkGroup, devices
 from dj_ansible.ansible_kit import execute
 import json
 from datetime import datetime
@@ -44,7 +44,7 @@ def home(request):
 def topologi(request):
     return render(request, 'ansibleweb/topologi.html')
 
-def devices(request):
+def devicess(request):
     all_device = AnsibleNetworkHost.objects.all()
     all_group = AnsibleNetworkGroup.objects.all()
 
@@ -81,6 +81,17 @@ def updatedevice(request, pk):
     context = {'form': form}
     return render(request, 'ansibleweb/post_host.html',context)
 
+
+def infodevice(request, pk):
+    perangkat = AnsibleNetworkHost.objects.get(id=pk)
+    info = devices.objects.all().filter(device_id=perangkat)
+
+    context = {
+        'perangkat': perangkat,
+        'info': info
+    }
+    return render(request, 'ansibleweb/infodevice.html', context)
+
 def deletegroup(request, id):
     group = AnsibleNetworkGroup.objects.get(pk=id)
     group.delete()
@@ -95,15 +106,193 @@ def deletedevice(request, id):
 def about(request):
     return render(request, 'ansibleweb/about.html', {'title': 'About'})
 
+def addportdevice(request):
+    if request.method == 'GET' and 'btnform1' in request.GET:
+        infos = addinfodevice(request.GET)
+        if infos.is_valid():
+            data = request.GET
+            print(request.GET)
+            info = devices.objects.all().filter(device_id=data['hosts'])
+            context = {
+                'infos': infos,
+                'info': info
+            }
+            return render(request, 'ansibleweb/addinfodevice.html', context)
+    elif request.method == 'GET' and 'btnform2' in request.GET:
+        infos = addinfodevice(request.GET)
+        if infos.is_valid():
+            data = request.GET
+            print(request.GET)
+            host = AnsibleNetworkHost.objects.get(id=data['hosts'])
+            os = host.group.ansible_network_os
+            jumlah = devices.objects.all().filter(device_id=host)
+            cannot = len(jumlah)
+            print(host.host)
+            if cannot == 0 and os == 'ce':
+                my_play = dict(
+                    name="Show ip interface",
+                    hosts=host.host,
+                    become='yes',
+                    become_method='enable',
+                    gather_facts='no',
+                    vars=[
+                        dict(ansible_command_timeout=120)
+                    ],
+                    tasks=[
+                        dict(action=dict(module='ce_command', commands='display ip int brief'))
+                        ]
+                    )
+                result = execute(my_play)
+                output = result.results
+                dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][10:]
+                maks = len(dataport)
+                for x in range(0, maks):
+                    portt = dataport[x][:23]
+                    ip = dataport[x][34:50]
+                    phys = dataport[x][55:59]
+                    prtcl = dataport[x][66:71]
+                    coba = devices(port=portt,
+                                    ipadd=ip,
+                                    physical=phys,
+                                    protocol=prtcl,
+                                    preconf='empty',
+                                    device_id=host)
+                    coba.save()
+                info = devices.objects.all().filter(device_id=data['hosts'])
+                context = {
+                    'infos': infos,
+                    'info': info
+                }
+                return render(request, 'ansibleweb/addinfodevice.html', context)
+            elif cannot == 0 and os == 'routeros':
+                my_play = dict(
+                    name="display ip",
+                    hosts=host.host,
+                    become='yes',
+                    become_method='enable',
+                    gather_facts='no',
+                    vars=[
+                        dict(ansible_command_timeout=120)
+                    ],
+                    tasks=[
+                        dict(action=dict(module='routeros_command',commands='/ip address print'))
+                        ]
+                    )
+                result = execute(my_play)
+                output = result.results
+                dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][2:]
+                maks = len(dataport)
+                for x in range(0, maks):
+                    ip = dataport[x][5:23]
+                    portt = dataport[x][40:46]
+                    coba = devices(port=portt,
+                                    ipadd=ip,
+                                    physical='',
+                                    protocol='',
+                                    device_id=host)
+                    coba.save()
+                info = devices.objects.all().filter(device_id=data['hosts'])
+                context = {
+                    'infos': infos,
+                    'info': info
+                }
+                return render(request, 'ansibleweb/addinfodevice.html', context)
+            else:
+                if os == 'ce':
+                    my_play = dict(
+                        name="Sh Ip interface",
+                        hosts=host.host,
+                        become='yes',
+                        become_method='enable',
+                        gather_facts='no',
+                        vars=[
+                            dict(ansible_command_timeout=120)
+                        ],
+                        tasks=[
+                            dict(action=dict(module='ce_command', commands='display ip interface brief'))
+                            ]
+                        )
+                    result = execute(my_play)
+                    condition = result.stats
+                    con = condition['hosts'][0]['status']
+                    if con == 'ok':
+                        output = result.results
+                        dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][10:]
+                        maks = len(dataport)
+                        for x in range(0, maks):
+                            portt = dataport[x][5:23]
+                            ip = dataport[x][34:51]
+                            phys = dataport[x][55:59]
+                            prtcl = dataport[x][66:71]
+                            devices.objects.filter(device_id=data['hosts']).filter(port=portt).update(ipadd=ip, physical=phys, protocol=prtcl)
+                        messages.success(request, f'Port telah tersedia!')
+                        info = devices.objects.all().filter(device_id=data['hosts'])
+                        context = {
+                            'infos': infos,
+                            'info': info
+                        }
+                        return render(request, 'ansibleweb/addinfodevice.html', context)
+                    else:
+                        messages.warning(request, f'Check Connection to Remote Host!')
+                        return redirect('port-device')
+                elif os == 'routeros':
+                    my_play = dict(
+                        name="display ip interface",
+                        hosts=host.host,
+                        become='yes',
+                        become_method='enable',
+                        gather_facts='no',
+                        vars=[
+                            dict(ansible_command_timeout=120)
+                        ],
+                        tasks=[
+                            dict(action=dict(module='routeros_command', commands='/ip address print'))
+                            ]
+                        )
+                    result = execute(my_play)
+                    condition = result.stats
+                    con = condition['hosts'][0]['status']
+                    if con == 'ok':
+                        output = result.results
+                        dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][2:]
+                        maks = len(dataport)
+                        for x in range(0, maks):
+                            ip = dataport[x][5:23]
+                            portt = dataport[x][40:46]
+                            devices.objects.filter(device_id=data['hosts']).filter(port=portt).update(ipadd=ip)
+                        messages.info(request, f'Port telah tersedia!')
+                        info = devices.objects.all().filter(device_id=data['hosts'])
+                        context = {
+                            'infos': infos,
+                            'info': info
+                        }
+                        return render(request, 'ansibleweb/addinfodevice.html', context)
+                    else:
+                        messages.warning(request, f'Check Connection to Remote Host!')
+                        return redirect('port-device')
+    else:
+        infos = addinfodevice()
+    
+    context = {
+        'infos': infos
+    }
+    return render(request, 'ansibleweb/addinfodevice.html',context)
+
 def addgroup(request):
     if request.method == 'POST':
-        adddgroup = PostInventoryGroup(request.POST)
+        adddgroup = group(request.POST)
         if adddgroup.is_valid():
-            adddgroup.save()
+            print(request.POST)
+            data = request.POST
+            my_group = AnsibleNetworkGroup(name=data['name'],
+                               ansible_connection='network_cli',
+                               ansible_network_os=data['os'],
+                               ansible_become=True)
+            my_group.save()
             messages.success(request, f'Berhasil membuat group host network')
             return redirect('group-create')
     else:
-        adddgroup = PostInventoryGroup()
+        adddgroup = group()
         return render(request, 'ansibleweb/post_group.html', {'form': adddgroup })
 
 def addhost(request):
@@ -392,7 +581,15 @@ def namehuawei(request):
                 ]
             )
             result = execute(my_play)
-            output = json.dumps(result.results, indent=4)
+            data = result.stats
+            results = result.results
+            device = data['hosts'][0]['host']
+            status = data['hosts'][0]['status']
+            #failed = results['failed'][0]['tasks'][0]['result']['msg']
+            #success = results['success'][0]['tasks'][0]['result']['stdout_lines'][0]
+
+            output = "Host :"+device+"    Config:"+status
+                
             context = {
                 'hostname': hostname,
                 'output': output
