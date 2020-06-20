@@ -143,27 +143,33 @@ def addportdevice(request):
                         ]
                     )
                 result = execute(my_play)
-                output = result.results
-                dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][10:]
-                maks = len(dataport)
-                for x in range(0, maks):
-                    portt = dataport[x][:23]
-                    ip = dataport[x][34:50]
-                    phys = dataport[x][55:59]
-                    prtcl = dataport[x][66:71]
-                    coba = devices(port=portt,
-                                    ipadd=ip,
-                                    physical=phys,
-                                    protocol=prtcl,
-                                    preconf='empty',
-                                    device_id=host)
-                    coba.save()
-                info = devices.objects.all().filter(device_id=data['hosts'])
-                context = {
-                    'infos': infos,
-                    'info': info
-                }
-                return render(request, 'ansibleweb/addinfodevice.html', context)
+                condition = result.stats
+                con = condition['hosts'][0]['status']
+                if con == 'ok':
+                    output = result.results
+                    dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][10:]
+                    maks = len(dataport)
+                    for x in range(0, maks):
+                        portt = dataport[x][:23]
+                        ip = dataport[x][34:50]
+                        phys = dataport[x][55:59]
+                        prtcl = dataport[x][66:71]
+                        coba = devices(port=portt,
+                                        ipadd=ip,
+                                        physical=phys,
+                                        protocol=prtcl,
+                                        preconf='empty',
+                                        device_id=host)
+                        coba.save()
+                    info = devices.objects.all().filter(device_id=data['hosts'])
+                    context = {
+                        'infos': infos,
+                        'info': info
+                    }
+                    return render(request, 'ansibleweb/addinfodevice.html', context)
+                else:
+                    messages.warning(request, f'Check Connection to Remote Host!')
+                    return redirect('port-device')
             elif cannot == 0 and os == 'routeros':
                 my_play = dict(
                     name="display ip",
@@ -179,24 +185,71 @@ def addportdevice(request):
                         ]
                     )
                 result = execute(my_play)
-                output = result.results
-                dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][2:]
-                maks = len(dataport)
-                for x in range(0, maks):
-                    ip = dataport[x][5:23]
-                    portt = dataport[x][40:46]
-                    coba = devices(port=portt,
-                                    ipadd=ip,
-                                    physical='',
-                                    protocol='',
-                                    device_id=host)
-                    coba.save()
-                info = devices.objects.all().filter(device_id=data['hosts'])
-                context = {
-                    'infos': infos,
-                    'info': info
-                }
-                return render(request, 'ansibleweb/addinfodevice.html', context)
+                condition= result.stats
+                con = condition['hosts'][0]['status']
+                if con == 'ok':
+                    output = result.results
+                    dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][2:]
+                    maks = len(dataport)
+                    for x in range(0, maks):
+                        ip = dataport[x][5:23]
+                        portt = dataport[x][40:46]
+                        coba = devices(port=portt,
+                                        ipadd=ip,
+                                        physical='',
+                                        protocol='',
+                                        device_id=host)
+                        coba.save()
+                    info = devices.objects.all().filter(device_id=data['hosts'])
+                    context = {
+                        'infos': infos,
+                        'info': info
+                    }
+                    return render(request, 'ansibleweb/addinfodevice.html', context)
+                else:
+                    messages.warning(request, f'Check Connection to Remote Host!')
+                    return redirect('port-device')
+            elif cannot == 0 and os =='ios':
+                my_play = dict(
+                    name="Show Ip interface brief",
+                    hosts=host.host,
+                    become='yes',
+                    become_method='enable',
+                    gather_facts='no',
+                    vars=[
+                        dict(ansible_command_timeout=120)
+                    ],
+                    tasks=[
+                        dict(action=dict(module='ios_command', commands=['show ip interface brief']))
+                        ]
+                    )
+                result = execute(my_play)
+                condition = result.stats
+                con = condition['hosts'][0]['status']
+                if con == 'ok':
+                    output = result.results
+                    dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][1:]
+                    maks = len(dataport)
+                    for x in range(0, maks):
+                        portt = dataport[x][:22]
+                        ip = dataport[x][27:42]
+                        phys = dataport[x][54:76]
+                        prtcl = dataport[x][76:80]
+                        coba = devices(port=portt,
+                                        ipadd=ip,
+                                        physical=phys,
+                                        protocol=prtcl,
+                                        device_id=host)
+                        coba.save()
+                    info = devices.objects.all().filter(device_id=data['hosts'])
+                    context = {
+                        'infos': infos,
+                        'info': info
+                    }
+                    return render(request, 'ansibleweb/addinfodevice.html', context)
+                else:
+                    messages.warning(request, f'Check Connection to Remote Host!')
+                    return redirect('port-device')
             else:
                 if os == 'ce':
                     my_play = dict(
@@ -270,6 +323,43 @@ def addportdevice(request):
                     else:
                         messages.warning(request, f'Check Connection to Remote Host!')
                         return redirect('port-device')
+                elif os == 'ios':
+                    my_play = dict(
+                        name="Show Ip interface brief",
+                        hosts=host.host,
+                        become='yes',
+                        become_method='enable',
+                        gather_facts='no',
+                        vars=[
+                            dict(ansible_command_timeout=120)
+                        ],
+                        tasks=[
+                            dict(action=dict(module='ios_command', commands=['show ip interface brief']))
+                            ]
+                        )
+                    result = execute(my_play)
+                    condition = result.stats
+                    con = condition['hosts'][0]['status']
+                    if con == 'ok':
+                        output = result.results
+                        dataport = output['success'][0]['tasks'][0]['result']['stdout_lines'][0][1:]
+                        maks = len(dataport)
+                        for x in range(0, maks):
+                            portt = dataport[x][:22]
+                            ip = dataport[x][27:42]
+                            phys = dataport[x][54:76]
+                            prtcl = dataport[x][76:80]
+                            devices.objects.filter(device_id=data['hosts']).filter(port=portt).update(ipadd=ip, physical=phys, protocol=prtcl)
+                        messages.info(request, f'Port telah tersedia!')
+                        info = devices.objects.all().filter(device_id=data['hosts'])
+                        context = {
+                            'infos': infos,
+                            'info': info
+                        }
+                        return render(request, 'ansibleweb/addinfodevice.html', context)
+                    else:
+                        messages.warning(request, f'Check connection to Remote Host!')
+                        return redirect('port-device') 
     else:
         infos = addinfodevice()
     
